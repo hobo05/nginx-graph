@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Minimal GoJS Sample</title>
+    <meta name="description" content="An almost minimal diagram using a very simple node template and the default link template." />
+    <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
+    <meta charset="UTF-8">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/1.6.7/go-debug.js"></script>
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+</head>
+
+<body>
+    <div id="sample">
+        <h3>Minimal GoJS Sample</h3>
+        <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
+       Also add a border to help see the edges. -->
+        <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
+        <p>This isn't a truly <i>minimal</i> demonstration of <b>GoJS</b>, because we do specify a custom Node template, but it's pretty simple. The whole source for the sample is shown below.</p>
+        <p>Using your mouse and common keyboard commands, you can pan, select, move, copy, delete, and undo/redo.</p>
+        <p>This sample sets the Diagram's Node template, which data-binds both the text string and the shape's fill color.</p>
+        <p>For an overview of building your own templates and model data, see the <a href="../learn/index.html">Getting Started tutorial.</a></p>
+        <p>The <a>Diagram.initialContentAlignment</a> setting causes the diagram's contents to appear in the center of the diagram's viewport.</p>
+        <p>On touch devices, hold your finger stationary to bring up a context menu. The default context menu supports most of the standard commands that are enabled at that time for that object.</p>
+        <p>For a more elaborate and capable sample, see the <a href="basic.html">Basic</a> sample.</p>
+        <p>For a sample that loads JSON data from the server, see the <a href="minimalJSON.html">Minimal JSON</a> sample.</p>
+    </div>
+
+    <script type="text/javascript" src="static/js/script.js" ></script>
+</body>
+
+</html>

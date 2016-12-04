@@ -1,0 +1,18 @@
+{
+  "name": "nginx-graph",
+  "version": "1.0.0",
+  "description": "auto-generated graphs for nginx",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tim.cheng09@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "express": "^4.14.0",
+    "multimap": "^1.0.2",
+    "mustache-express": "^1.2.4",
+    "node-file-parser": "^2.2.2"
+  }
+}
