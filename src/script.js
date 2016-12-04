@@ -1,4 +1,4 @@
-var $ = require("jquery");
+// var $ = require("jquery");
 var $$ = require("gojs");
 
 document.body.onload = $(function() {
@@ -40,11 +40,54 @@ function createDiagram(dataArray) {
 
     var $$ = go.GraphObject.make; // for conciseness in defining templates
 
-    myDiagram = $$(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
+    var myDiagram = $$(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
         {
             initialContentAlignment: go.Spot.Center, // center the content
             "undoManager.isEnabled": true // enable undo & redo
         });
+
+    // To simplify this code we define a function for creating a context menu button:
+    function makeButton(text, action, visiblePredicate) {
+        return $$("ContextMenuButton",
+            $$(go.TextBlock, text), { click: action },
+            // don't bother with binding GraphObject.visible if there's no predicate
+            visiblePredicate ? new go.Binding("visible", "", visiblePredicate).ofObject() : {});
+    }
+
+    // a context menu is an Adornment with a bunch of buttons in them
+    var partContextMenu =
+        $$(go.Adornment, "Vertical",
+            makeButton("Source",
+                function(e, obj) { // OBJ is this Button
+                    var contextmenu = obj.part; // the Button is in the context menu Adornment
+                    var part = contextmenu.adornedPart; // the adornedPart is the Part that the context menu adorns
+                    // now can do something with PART, or with its data, or with the Adornment (the context menu)
+                    if (part instanceof go.Link) alert(linkInfo(part.data));
+                    else if (part instanceof go.Group) alert(groupInfo(contextmenu));
+                    else {
+                        // Mark the source and scroll to it smoothly
+                        $("pre").unmark();
+                        $("pre").mark(part.data.key);
+
+
+                        var firstMatch = $("pre").find("mark").eq(0);
+                        if (firstMatch.length) {
+                            // Find the offset that sets the element in the middle
+                            var elOffset = firstMatch.offset().top;
+                            var elHeight = firstMatch.height();
+                            var windowHeight = $(window).height();
+                            var offset;
+
+                            if (elHeight < windowHeight) {
+                                offset = elOffset - ((windowHeight / 2) - (elHeight / 2));
+                            } else {
+                                offset = elOffset;
+                            }
+                            $('html, body').animate({ scrollTop: offset }, 700);
+                        }
+                    }
+                })
+        );
 
     myDiagram.nodeTemplate =
         $$(go.Node, "Vertical", // second argument of a Node/Panel can be a Panel type
@@ -70,16 +113,19 @@ function createDiagram(dataArray) {
 
                 $$(go.TextBlock,
                     "default text", // string argument can be initial text string
-                    { /* set TextBlock properties here */ },
+                    { font: "bold 18px sans-serif" },
                     // example TextBlock binding sets TextBlock.text to the value of Node.data.key
-                    new go.Binding("text", "mainProp"))
+                    new go.Binding("text", "type"))
             ),
 
             $$(go.TextBlock,
                 "default text", // string argument can be initial text string
                 { /* set TextBlock properties here */ },
                 // example TextBlock binding sets TextBlock.text to the value of Node.data.key
-                new go.Binding("text", "key"))
+                new go.Binding("text", "key")), {
+                // this context menu Adornment is shared by all nodes
+                contextMenu: partContextMenu
+            }
         );
 
     var myModel = $$(go.TreeModel);
@@ -102,4 +148,21 @@ function createDiagram(dataArray) {
             // if we wanted an arrowhead we would also add another Shape with toArrow defined:
             $$(go.Shape, { toArrow: "Standard", stroke: null })
         );
+
+    $("#zoomToFit").on("click", function() {
+        myDiagram.zoomToFit();
+    });
+
+    $("#centerRoot").on("click", function() {
+        // reset the scale
+        myDiagram.scale = 1;
+        
+        // Find the root node by example
+        var iter = myDiagram.findNodesByExample({type: "channel"});
+        var rootNode = iter.first();
+        // Scroll to the root node
+        myDiagram.scrollToRect(rootNode.actualBounds);
+
+    });
+
 }

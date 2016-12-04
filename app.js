@@ -19,21 +19,21 @@ app.use('/static', express.static('public'))
 // Parse the body
 app.use(bodyparser.urlencoded({extended: false}))
 
+var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/auctionzip/auctionzip.com.conf"
+// var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/connect-prd/connect.com.conf"
+
 app.get('/', function(req, res) {
     res.render('index.html')
 })
 
 app.get('/data', function(req, res) {
     res.setHeader("Content-Type", "application/json")
-    // var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/auctionzip/auctionzip.com.conf"
-    var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/connect-prd/connect.com.conf"
     nginxParser(filename, "connect", function (data) {
         res.end(JSON.stringify(data))
     })
 })
 
 app.get('/source', function(req, res) {
-    var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/connect-prd/connect.com.conf"
 	fs.readFile(filename, 'utf-8', function(err, data) {
 	    if (err) {
         	return console.log(err);

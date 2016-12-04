@@ -12,7 +12,10 @@ module.exports = function(filename, rootParent, callback) {
         input: fs.createReadStream(filename),
         terminal: false
     }).on('line', function(line) {
-        if (line.match(/charset_map/)) {
+
+        // Skip these the charset map and comments
+        if (line.match(/charset_map/) ||
+            line.match(/\s*#/)) {
             return;
         }
 
@@ -42,7 +45,7 @@ module.exports = function(filename, rootParent, callback) {
 
         var obj = line.match(/(\w+)\s+(.*)\s*{/)
         if (obj) {
-            parseStack.push({ name: obj[1], value: obj[2] });
+            parseStack.push({ name: obj[1], type: obj[1], value: obj[2] });
             // printStack()
             return;
         }
@@ -60,11 +63,14 @@ module.exports = function(filename, rootParent, callback) {
             // If the server name is found, set that as the name
 			if (curObj.name === "server" && propName === "server_name") {
 				curObj.name = propValue;
-			}
+			}  
+            else if (curObj.type === "location" && propName === "proxy_pass") {
+                nginxGraphObjects.push({ name: propValue, type: propName, parent: curObj.value });
+            }
         }
     }).on('close', function() {
     	// Create root parent inside
-    	var graphObjs = [{key: rootParent}];
+    	var graphObjs = [{key: rootParent, type: "channel"}];
 
     	nginxGraphObjects.forEach(function (curObj) {
     		graphObjs = graphObjs.concat(parseAsGraphObjects(curObj, []))
@@ -92,7 +98,7 @@ function parseAsGraphObjects(nginxObject, createdObjects) {
 	}
 
 	// First add the object to the created list
-	createdObjects.push({key: key, parent: nginxObject.parent});
+	createdObjects.push({key: key, type: nginxObject.type, parent: nginxObject.parent});
 
 	// If there are no children, simply return
 	if (!nginxObject.children) {
