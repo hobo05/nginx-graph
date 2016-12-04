@@ -3,6 +3,7 @@ var express = require('express')
 var bodyparser = require('body-parser')
 var mustacheExpress = require('mustache-express')
 var nginxParser = require('./nginx-parser')
+const fs = require("fs");
 
 var app = express()
 
@@ -29,6 +30,17 @@ app.get('/data', function(req, res) {
     nginxParser(filename, "connect", function (data) {
         res.end(JSON.stringify(data))
     })
+})
+
+app.get('/source', function(req, res) {
+    var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/connect-prd/connect.com.conf"
+	fs.readFile(filename, 'utf-8', function(err, data) {
+	    if (err) {
+        	return console.log(err);
+    	}
+    	res.end(data);
+	});
+
 })
 
 app.listen(4000)

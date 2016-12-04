@@ -11,8 +11,13 @@
   "dependencies": {
     "body-parser": "^1.15.2",
     "express": "^4.14.0",
+    "gojs": "^1.6.21",
+    "jquery": "^2.2.4",
     "multimap": "^1.0.2",
     "mustache-express": "^1.2.4",
     "node-file-parser": "^2.2.2"
+  },
+  "devDependencies": {
+    "webpack": "^1.13.3"
   }
 }
