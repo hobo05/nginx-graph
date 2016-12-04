@@ -19,7 +19,9 @@ app.use('/static', express.static('public'))
 // Parse the body
 app.use(bodyparser.urlencoded({extended: false}))
 
+var channel = "auctionzip";
 var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/auctionzip/auctionzip.com.conf"
+// var channel = "connect";
 // var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/connect-prd/connect.com.conf"
 
 app.get('/', function(req, res) {
@@ -28,7 +30,7 @@ app.get('/', function(req, res) {
 
 app.get('/data', function(req, res) {
     res.setHeader("Content-Type", "application/json")
-    nginxParser(filename, "connect", function (data) {
+    nginxParser(filename, channel, function (data) {
         res.end(JSON.stringify(data))
     })
 })
