@@ -7,6 +7,9 @@ var Multimap = require('multimap');
 module.exports = function(filename, rootParent, callback) {
     var parseStack = []
     var nginxGraphObjects = []
+    var rootKey = 0;
+    var currentKey = 1;
+
 
     readline.createInterface({
         input: fs.createReadStream(filename),
@@ -29,23 +32,23 @@ module.exports = function(filename, rootParent, callback) {
                 valueMultiMap.set(lastobj.name, lastobj)
 
                 // Set the object's parent to the root object's name
-                lastobj.parent = rootObject.name
+                lastobj.parent = rootObject.key
                 return
             } else {
             	// If there is no rootObject, set it to the rootParent
-            	lastobj.parent = rootParent;
+            	lastobj.parent = rootKey;
 
             	// Add to graph objects
             	nginxGraphObjects.push(lastobj);
             }
-            console.log("lastobj=" + JSON.stringify(lastobj))
-            printProperties(lastobj.properties)
+            // console.log("lastobj=" + JSON.stringify(lastobj))
+            // printProperties(lastobj.properties)
             return;
         }
 
         var obj = line.match(/(\w+)\s+(.*)\s*{/)
         if (obj) {
-            parseStack.push({ name: obj[1], type: obj[1], value: obj[2] });
+            parseStack.push({key: currentKey++, name: obj[1], type: obj[1], value: obj[2] });
             // printStack()
             return;
         }
@@ -65,12 +68,12 @@ module.exports = function(filename, rootParent, callback) {
 				curObj.name = propValue;
 			}  
             else if (curObj.type === "location" && propName === "proxy_pass") {
-                nginxGraphObjects.push({ name: propValue, type: propName, parent: curObj.value });
+                nginxGraphObjects.push({key: currentKey++, name: propValue, type: propName, parent: curObj.key });
             }
         }
     }).on('close', function() {
     	// Create root parent inside
-    	var graphObjs = [{key: rootParent, type: "channel"}];
+    	var graphObjs = [{key: rootKey, name: rootParent, type: "channel"}];
 
     	nginxGraphObjects.forEach(function (curObj) {
     		graphObjs = graphObjs.concat(parseAsGraphObjects(curObj, []))
@@ -91,14 +94,20 @@ function getOrCreateMultiMap(obj, propName) {
 
 function parseAsGraphObjects(nginxObject, createdObjects) {
 
-	var key = nginxObject.name;
-
 	if (nginxObject.name === "location") {
-		key = nginxObject.value;
+		nginxObject.name = nginxObject.value;
 	}
 
+    if (nginxObject.properties) {
+        var toolTip = "";
+        nginxObject.properties.forEach(function(value, key) {
+            toolTip += key + ": " + value + "\n";
+        });
+        nginxObject.propertiesTooltip = toolTip;
+    }
+
 	// First add the object to the created list
-	createdObjects.push({key: key, type: nginxObject.type, parent: nginxObject.parent});
+	createdObjects.push(nginxObject);
 
 	// If there are no children, simply return
 	if (!nginxObject.children) {

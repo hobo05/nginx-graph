@@ -19,13 +19,13 @@ app.use('/static', express.static('public'))
 // Parse the body
 app.use(bodyparser.urlencoded({extended: false}))
 
-var channel = "auctionzip";
+var channel = "AuctionZip";
 var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/auctionzip/auctionzip.com.conf"
-// var channel = "connect";
+// var channel = "Connect-IB";
 // var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/connect-prd/connect.com.conf"
 
 app.get('/', function(req, res) {
-    res.render('index.html')
+    res.render('index.html', {channel: channel})
 })
 
 app.get('/data', function(req, res) {

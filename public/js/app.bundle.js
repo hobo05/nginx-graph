@@ -88,6 +88,7 @@
 
 	    var myDiagram = $$(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
 	        {
+	            "toolManager.hoverDelay": 100,  // 100 milliseconds instead of the default 850
 	            initialContentAlignment: go.Spot.Center, // center the content
 	            "undoManager.isEnabled": true // enable undo & redo
 	        });
@@ -113,7 +114,7 @@
 	                    else {
 	                        // Mark the source and scroll to it smoothly
 	                        $("pre").unmark();
-	                        $("pre").mark(part.data.key);
+	                        $("pre").mark(part.data.name);
 
 
 	                        var firstMatch = $("pre").find("mark").eq(0);
@@ -135,9 +136,26 @@
 	                })
 	        );
 
+	    // get tooltip text from the object's data
+	    function tooltipTextConverter(nginxConfig) {        
+	        return nginxConfig.propertiesTooltip;
+	    }
+
+	    // define tooltips for nodes
+	    var tooltiptemplate =
+	      $$(go.Adornment, "Auto",
+	        $$(go.Shape, "Rectangle",
+	          { fill: "whitesmoke", stroke: "black" }),
+	        $$(go.TextBlock,
+	          { font: "bold 8pt Helvetica, bold Arial, sans-serif",
+	            wrap: go.TextBlock.WrapFit,
+	            margin: 5 },
+	          new go.Binding("text", "", tooltipTextConverter))
+	      );
+
 	    myDiagram.nodeTemplate =
 	        $$(go.Node, "Vertical", // second argument of a Node/Panel can be a Panel type
-	            { /* set Node properties here */ }, {
+	            { toolTip: tooltiptemplate }, {
 	                mouseEnter: function(e, obj) {
 	                    var node = obj.part;
 	                    console.log("parent=" + node.data.test)
@@ -147,7 +165,7 @@
 	            new go.Binding("location", "loc"),
 
 	            $$(go.Panel, "Auto", // second argument of a Node/Panel can be a Panel type
-	                { /* set Node properties here */ },
+	                {  },
 
 	                // GraphObjects contained within the Node
 	                // this Shape will be vertically above the TextBlock
@@ -168,7 +186,7 @@
 	                "default text", // string argument can be initial text string
 	                { /* set TextBlock properties here */ },
 	                // example TextBlock binding sets TextBlock.text to the value of Node.data.key
-	                new go.Binding("text", "key")), {
+	                new go.Binding("text", "name")), {
 	                // this context menu Adornment is shared by all nodes
 	                contextMenu: partContextMenu
 	            }

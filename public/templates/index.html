@@ -7,31 +7,47 @@
     <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
     <meta charset="UTF-8">
     <!-- dev -->
-    <!-- <link rel="stylesheet" type="text/css" href="../styles/default.css"> -->
+    <!-- <link rel="stylesheet" type="text/css" href="../styles/solarized-dark.css"> -->
+    <style>
+        #myDiagramDiv {
+            margin: 20px 0;
+        }
+    </style>
+
     <!-- prod -->
     <link rel="stylesheet" type="text/css" href="static/styles/solarized-dark.css">
+
+    <!-- external -->
+    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.4.2/jquery.mark.min.js"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 </head>
 
 <body>
-    <div id="container">
-        <h1>Nginx Graph</h1>
+    <div class="container">
+        <h1>Nginx Graph - {{channel}}</h1>
         <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        Also add a border to help see the edges. -->
         <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
-        <button id="zoomToFit">Zoom to Fit</button>
-        <button id="centerRoot">Center on root</button>
+        <button id="zoomToFit" class="btn btn-primary"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> Zoom to Fit</button>
+        <button id="centerRoot" class="btn btn-success"><span class="glyphicon glyphicon-screenshot" aria-hidden="true"></span> Center on root</button>
         <h1>Nginx Source</h1>
         <pre><code class="nginx"></code></pre>
     </div>
     <!-- dev -->
-    <!--     <script type="text/javascript" src="../js/highlight.pack.js"></script>
+<!--     <script type="text/javascript" src="../js/highlight.pack.js"></script>
     <script type="text/javascript" src="../js/highlightjs-line-numbers.min.js"></script>
     <script type="text/javascript" src="../js/app.bundle.js"></script> -->
     <!-- prod -->
     <script type="text/javascript" src="static/js/highlight.pack.js"></script>
     <script type="text/javascript" src="static/js/highlightjs-line-numbers.min.js"></script>
-    <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.4.2/jquery.mark.min.js"></script>
     <script type="text/javascript" src="static/js/app.bundle.js"></script>
 </body>
 
