@@ -1,6 +1,11 @@
 # nginx-graph
 A way to visualize nginx config files
 
+## Features
+* Display nginx config files in a tree diagram
+* Interactive diagrams
+* Scroll to source code from graph
+
 ## Technologies
 * [Node.js](https://nodejs.org) - Server-side Javascript
 * [NPM](https://www.npmjs.com/) - Node package manager
@@ -9,6 +14,7 @@ A way to visualize nginx config files
 * [Mustache on Express](https://www.npmjs.com/package/mustache-express) - Templating language
 * [Webpack](http://webpack.github.io/docs/) - Javascript module bundler
 * [highlightjs](https://highlightjs.org/) - Syntax highlighting for source code
+* [markjs](https://markjs.io/) - Javascript keyword highlighting
 
 ## Endpoints
 
