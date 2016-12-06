@@ -43,3 +43,23 @@ A way to visualize nginx config files
 1. Define code block in HTML
 2. Make an ajax call to `/source` and set the code block to the source
 3. Use highlightjs to highlight the code block on callback
+
+## How to run it
+* Clone the repo
+```bash
+git clone https://github.com/hobo05/nginx-graph.git
+cd nginx-graph
+```
+* Find the following lines in app.js
+```javascript
+var channel = "AuctionZip";
+var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/auctionzip/auctionzip.com.conf"
+```
+* Change the filename to the path where your nginx config file exists
+* Change the channel if you wish the root node of the diagram to display correctly
+* Install the dependencies and start the app
+```bash
+npm install
+npm start
+```
+* Go to <http://localhost:4000> to see the rendered diagram
