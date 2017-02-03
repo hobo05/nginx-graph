@@ -3,6 +3,7 @@ var config = require('./config');
 
 var path = require('path')
 var express = require('express')
+var ipfilter = require('express-ipfilter').IpFilter;
 var bodyparser = require('body-parser')
 var mustacheExpress = require('mustache-express')
 var Promise = require("bluebird");
@@ -21,6 +22,10 @@ app.engine('html', mustacheExpress());
 
 app.set('views', path.join(__dirname, 'public/templates'))
 app.set('view engine', 'mustache');
+
+// ip filter
+var ips = ['50.235.35.0/24'];
+app.use(ipfilter(ips, {mode: 'allow'}));
 
 // serve static content
 app.use('/static', express.static('public'))
