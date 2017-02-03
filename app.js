@@ -24,7 +24,7 @@ app.set('views', path.join(__dirname, 'public/templates'))
 app.set('view engine', 'mustache');
 
 // ip filter
-var ips = ['50.235.35.0/24'];
+var ips = config("WHITELISTED_IPS").split(",");
 app.use(ipfilter(ips, {mode: 'allow', allowedHeaders: ['x-forwarded-for']}));
 
 // serve static content

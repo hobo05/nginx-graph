@@ -11,7 +11,8 @@ const config = {
   NGINX_CONF_REPO: process.env.NGINX_CONF_REPO,
   REPO_BRANCH: process.env.REPO_BRANCH,
   REPO_USERNAME: process.env.REPO_USERNAME,
-  REPO_PASSWORD: process.env.REPO_PASSWORD
+  REPO_PASSWORD: process.env.REPO_PASSWORD,
+  WHITELISTED_IPS: process.env.WHITELISTED_IPS
 }
 
 module.exports = (key) => {
