@@ -25,7 +25,7 @@ app.set('view engine', 'mustache');
 
 // ip filter
 var ips = ['50.235.35.0/24'];
-app.use(ipfilter(ips, {mode: 'allow'}));
+app.use(ipfilter(ips, {mode: 'allow', allowedHeaders: ['x-forwarded-for']}));
 
 // serve static content
 app.use('/static', express.static('public'))
