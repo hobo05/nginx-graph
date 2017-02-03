@@ -1,9 +1,18 @@
+// Load .env
+var config = require('./config');
+
 var path = require('path')
 var express = require('express')
 var bodyparser = require('body-parser')
 var mustacheExpress = require('mustache-express')
-var nginxParser = require('./nginx-parser')
+var Promise = require("bluebird");
 const fs = require("fs");
+
+// local modules
+var nginxParser = Promise.promisify(require('./nginx-parser'));
+var latestCommit = require('./latest-git-master-commit');
+
+
 
 var app = express()
 
@@ -20,7 +29,11 @@ app.use('/static', express.static('public'))
 app.use(bodyparser.urlencoded({extended: false}))
 
 var channel = "AuctionZip";
-var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/auctionzip/auctionzip.com.conf"
+
+const REPO_DIR = path.resolve(__dirname, "nginx");
+var auctionZipConf = path.resolve(REPO_DIR, "prod/conf.d/auctionzip/auctionzip.com.conf");
+
+// var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/auctionzip/auctionzip.com.conf"
 // var channel = "Connect-IB";
 // var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/connect-prd/connect.com.conf"
 
@@ -30,19 +43,25 @@ app.get('/', function(req, res) {
 
 app.get('/data', function(req, res) {
     res.setHeader("Content-Type", "application/json")
-    nginxParser(filename, channel, function (data) {
+
+    nginxParser(auctionZipConf, channel
+    ).then(data => {
         res.end(JSON.stringify(data))
-    })
+    }).catch(error => console.error(error));
 })
 
 app.get('/source', function(req, res) {
-	fs.readFile(filename, 'utf-8', function(err, data) {
+	fs.readFile(auctionZipConf, 'utf-8', function(err, data) {
 	    if (err) {
-        	return console.log(err);
+        	return console.error(err);
     	}
     	res.end(data);
 	});
 
 })
 
-app.listen(4000)
+latestCommit(config("NGINX_CONF_REPO"), REPO_DIR)
+    .then(() => {
+        console.log("Nginx conf repo cloned successfully. Start server...")
+        app.listen(config("PORT"))
+    }).catch(error => console.error(error));

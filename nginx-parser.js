@@ -78,7 +78,7 @@ module.exports = function(filename, rootParent, callback) {
     	nginxGraphObjects.forEach(function (curObj) {
     		graphObjs = graphObjs.concat(parseAsGraphObjects(curObj, []))
     	});
-        return callback(graphObjs);
+        return callback(null, graphObjs);
     })
 
 };
