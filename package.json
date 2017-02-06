@@ -2,29 +2,44 @@
   "name": "nginx-graph",
   "version": "1.0.0",
   "description": "auto-generated graphs for nginx",
-  "main": "app.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "watch": "webpack --progress --colors --watch",
-    "postinstall": "webpack",
-    "start": "node app.js"
+    "heroku-postbuild": "rimraf dist && NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
+    "start": "node server"
   },
   "author": "tim.cheng09@gmail.com",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hobo05/nginx-graph.git"
+  },
   "dependencies": {
     "bluebird": "^3.4.7",
     "body-parser": "^1.15.2",
     "dotenv": "^4.0.0",
     "express": "^4.14.0",
     "express-ipfilter": "^0.2.1",
-    "gojs": "^1.6.21",
-    "jquery": "^2.2.4",
-    "multimap": "^1.0.2",
     "mustache-express": "^1.2.4",
     "node-file-parser": "^2.2.2",
     "nodegit": "^0.16.0"
   },
   "devDependencies": {
-    "webpack": "^1.13.3"
+    "babel-core": "^6.22.1",
+    "babel-loader": "^6.2.10",
+    "babel-preset-env": "^1.1.8",
+    "bootstrap": "^3.3.7",
+    "css-loader": "^0.26.1",
+    "gojs": "^1.6.21",
+    "highlightjs": "^9.8.0",
+    "highlightjs-line-numbers.js": "^1.1.0",
+    "jquery": "^2.2.4",
+    "mark.js": "github:julmot/mark.js",
+    "multimap": "^1.0.2",
+    "rimraf": "^2.5.4",
+    "style-loader": "^0.13.1",
+    "webpack": "^1.13.3",
+    "webpack-dev-middleware": "^1.10.0",
+    "webpack-hot-middleware": "^2.16.1"
   }
 }

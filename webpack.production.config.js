@@ -2,11 +2,8 @@ const path = require('path')
 const webpack = require('webpack')
 
 module.exports = {
-    devtool: 'eval-source-map',
-
     entry: [
-    	'webpack-hot-middleware/client', 
-    	path.join(__dirname, 'src/index.js')
+        path.join(__dirname, 'src/index.js')
     ],
     output: {
         path: path.join(__dirname, '/dist/'),
@@ -17,8 +14,14 @@ module.exports = {
     plugins: [
         // OccurenceOrderPlugin is needed for webpack 1.x only
         new webpack.optimize.OccurenceOrderPlugin(),
-        new webpack.HotModuleReplacementPlugin(),
-        new webpack.NoErrorsPlugin()
+        new webpack.NoErrorsPlugin(),
+        // TODO: Not sure why it doesn't work
+        // new webpack.optimize.UglifyJsPlugin({
+        //     compressor: {
+        //         warnings: false,
+        //         screw_ie8: true
+        //     }
+        // }),
     ],
 
     loaders: [{
