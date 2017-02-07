@@ -3,8 +3,9 @@ A way to visualize nginx config files
 
 ## Features
 * Display nginx config files in a tree diagram
-* Interactive diagrams
-* Scroll to source code from graph
+* Switching between multiple config files with no page reload
+* Hover mouse over nodes to see associated source code
+* Right-click on nodes to scroll to source code from graph
 
 ## Technologies
 * [Node.js](https://nodejs.org) - Server-side Javascript
