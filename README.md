@@ -10,6 +10,7 @@ A way to visualize nginx config files
 * [Node.js](https://nodejs.org) - Server-side Javascript
 * [NPM](https://www.npmjs.com/) - Node package manager
 * [ExpressJS](http://expressjs.com/) - Node webserver
+* [NodeGit](http://www.nodegit.org/) - Asynchronous native Node bindings to libgit2
 * [GoJS](http://gojs.net/) - Interactive diagrams in HTML
 * [Mustache on Express](https://www.npmjs.com/package/mustache-express) - Templating language
 * [Webpack v1.x](http://webpack.github.io/docs/) - Javascript module bundler
@@ -75,4 +76,5 @@ npm start
 * Follow the tutorial for [Getting Started on Heroku with Node.js](https://devcenter.heroku.com/articles/getting-started-with-nodejs) if you don't know how Heroku works
 * Create a new Heroku app from your project root
 * Install <https://github.com/xavdid/heroku-config> and push your .env settings to heroku
+* Run `heroku buildpacks:add --index 1 https://github.com/heroku/heroku-buildpack-apt`. This will tell heroku to run the Aptfile in the root of the project which installs necessary libraries for NodeGit before starting the app. See this [github issue](https://github.com/nodegit/nodegit/issues/845) for more details
 * Run `git push heroku master` and it should be up in running in the cloud!
