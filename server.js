@@ -6,6 +6,7 @@ var express = require('express')
 var ipfilter = require('express-ipfilter').IpFilter;
 var bodyparser = require('body-parser')
 var mustacheExpress = require('mustache-express')
+var _ = require('lodash');
 var Promise = require("bluebird");
 const fs = require("fs");
 
@@ -17,8 +18,6 @@ var compiler = webpack(webpackConfig);
 // local modules
 var nginxParser = Promise.promisify(require('./lib/nginx-parser'));
 var latestCommit = require('./lib/latest-git-master-commit');
-
-
 
 var app = express()
 
@@ -52,32 +51,66 @@ if (ipsString.length > 0) {
 app.use(express.static(__dirname + '/dist'))
 
 // Parse the body
-app.use(bodyparser.urlencoded({extended: false}))
+app.use(bodyparser.json());
 
-var channel = "AuctionZip";
-
+// nginx conf repo directory
 const REPO_DIR = path.resolve(__dirname, "nginx");
-var auctionZipConf = path.resolve(REPO_DIR, "prod/conf.d/auctionzip/auctionzip.com.conf");
 
-// var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/auctionzip/auctionzip.com.conf"
-// var channel = "Connect-IB";
-// var filename = "/Users/tcheng/dev/projects/nginx/prod/conf.d/connect-prd/connect.com.conf"
+// Load the nginx conf JSON file
+var nginxLoadConf = JSON.parse(fs.readFileSync(config("NGINX_CONF_LOAD_CONF")));
+
+// Add field in object to determine if the conf key is the selectd one
+function createSelectData(nginxLoadConf, selectedKey) {
+    return _.map(nginxLoadConf, obj => {
+        obj.selected = obj.key === selectedKey
+        return obj;
+    });
+}
+
+function getConfKey(req) {
+    var confKey = defaultConfKey;
+    if (req.body.confKey) {
+        confKey = req.body.confKey;
+    }
+    return confKey;
+}
+
+function getConfPath(key) {
+    // Find the path by confKey
+    var confEntry = _.find(nginxLoadConf, ["key", key]);
+    return path.resolve(REPO_DIR, confEntry.path);
+}
+
+// Select the default conf as the first one
+var defaultConf = nginxLoadConf[0];
+var defaultConfKey = defaultConf.key;
+var defaultPath = path.resolve(REPO_DIR, defaultConf.path);
 
 app.get('/', function(req, res) {
-    res.render('index.html', {channel: channel})
+    var confKey = getConfKey(req);
+
+    res.render('index.html', {
+        confKey: confKey,
+        nginxLoadConf: createSelectData(nginxLoadConf, confKey)
+    })
 })
 
-app.get('/data', function(req, res) {
+app.post('/data', function(req, res) {
     res.setHeader("Content-Type", "application/json")
 
-    nginxParser(auctionZipConf, channel
-    ).then(data => {
+    var confKey = getConfKey(req);
+    var absolutePath = getConfPath(confKey);
+
+    nginxParser(absolutePath, confKey).then(data => {
         res.end(JSON.stringify(data))
     }).catch(error => console.error(error));
 })
 
-app.get('/source', function(req, res) {
-	fs.readFile(auctionZipConf, 'utf-8', function(err, data) {
+app.post('/source', function(req, res) {
+    var confKey = getConfKey(req);
+    var absolutePath = getConfPath(confKey);
+
+	fs.readFile(absolutePath, 'utf-8', function(err, data) {
 	    if (err) {
         	return console.error(err);
     	}

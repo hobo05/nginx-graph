@@ -2,34 +2,41 @@
 <html>
 
 <head>
-    <title>Nginx Graph - {{channel}}</title>
+    <title>Nginx Graph - {{confKey}}</title>
     <meta name="description" content="An almost minimal diagram using a very simple node template and the default link template." />
     <!-- Copyright 1998-2016 by Northwoods Software Corporation. -->
     <meta charset="UTF-8">
-    <!-- dev -->
-    <!-- <link rel="stylesheet" type="text/css" href="../styles/solarized-dark.css"> -->
     <style>
-        #myDiagramDiv {
-            margin: 20px 0;
-        }
+    #myDiagramDiv {
+        margin: 20px 0;
+    }
     </style>
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
     <!-- Optional theme -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
 </head>
 
 <body>
     <div class="container">
-        <h1>Nginx Graph - {{channel}}</h1>
+        <h1>Nginx Graph - {{confKey}}</h1>
+        <form class="form-inline">
+            <div class="form-group">
+                <label for="confKey">Nginx Config</label>
+                <select id="confKey" class="form-control">
+                    {{#nginxLoadConf}}
+                    <option {{#selected}}selected="selected"{{/selected}} value="{{key}}">{{key}}</option>
+                    {{/nginxLoadConf}}
+                </select>
+            </div>
+        </form>
         <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
        Also add a border to help see the edges. -->
         <div id="myDiagramDiv" style="border: solid 1px black; width:100%; height:500px"></div>
         <button id="zoomToFit" class="btn btn-primary"><span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span> Zoom to Fit</button>
         <button id="centerRoot" class="btn btn-success"><span class="glyphicon glyphicon-screenshot" aria-hidden="true"></span> Center on root</button>
         <h1>Nginx Source</h1>
-        <pre><code class="nginx"></code></pre>
+        <pre id="source"></pre>
     </div>
     <script type="text/javascript" src="app.bundle.js"></script>
 </body>

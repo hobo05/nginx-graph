@@ -17,24 +17,56 @@ require("./js/jquery.mark.min");
 // Load goJS to render graphs
 var $$ = require("gojs");
 
-document.body.onload = $(function() {
-    $.ajax({
-        url: '/data', //the URL to your node.js server that has data
-        dataType: 'json',
-        cache: false
-    }).done(data => createDiagram(data));
+// Create the current conf key JSON from the select
+var createConfJson = () => JSON.stringify({"confKey": $("#confKey").val()});
 
+// Retrieve the diagram data from server
+var retrieveDiagramData = () => {
+    return $.ajax({
+        url: '/data', //the URL to your node.js server that has data
+        method: 'POST',
+        contentType: 'application/json',
+        dataType: 'json',
+        cache: false,
+        data: createConfJson()
+    })
+};
+
+// Retrieve the source code from the server andn highlight the code
+var retrieveAndSetSourceCode = () => {
     $.ajax({
         url: '/source', //the URL to your node.js server that has data
-        cache: false
+        method: 'POST',
+        contentType: 'application/json',
+        cache: false,
+        data: createConfJson()
     }).done(data => {
-        var sourceCode = $("pre>code");
+        var sourceCode = $("<code></code>").addClass("nginx");
         sourceCode.text(data);
+
+        var sourceContainer = $("#source")
+        sourceContainer.empty();
+        sourceContainer.append(sourceCode);
 
         $('pre code').each((i, block) => {
             hljs.highlightBlock(block);
             hljs.lineNumbersBlock(block);
         });
+    })
+}
+
+
+// Declare myModel here so it can be updated dynamically
+var myModel;
+
+document.body.onload = $(() => {
+    retrieveDiagramData().done(data => createDiagram(data));
+
+    retrieveAndSetSourceCode();
+
+    $('#confKey').on('change', event => {
+        retrieveDiagramData().done(data => myModel.nodeDataArray = data);
+        retrieveAndSetSourceCode();
     });
 });
 
@@ -50,7 +82,6 @@ document.body.onload = $(function() {
 // document.body.onload = createDiagram(nodeDataArray)
 
 function createDiagram(dataArray) {
-    if (window.goSamples) goSamples(); // init for these samples -- you don't need to call this
 
     var $$ = go.GraphObject.make; // for conciseness in defining templates
 
@@ -160,7 +191,7 @@ function createDiagram(dataArray) {
             }
         );
 
-    var myModel = $$(go.TreeModel);
+    myModel = $$(go.TreeModel);
     // in the model data, each node is represented by a JavaScript object:
     myModel.nodeDataArray = dataArray
 
