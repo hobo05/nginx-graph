@@ -1,0 +1,41 @@
+{
+	// This is the root directory of your nginx conf files
+	"nginxConfRootDir": "./nginx",
+
+	//////////////////
+	// Git Settings //
+	//////////////////
+
+	"gitCloneConf": {
+		// Enables cloning from git repo, if false, the root dir should point to an existing dir
+		"enable": true,
+		// Git Repo Url
+		"url": "https://test.org/test/test.git",
+		// Branch to clone
+		"branch": "master"
+	},
+
+	//////////////////////////////
+	// Individual Conf Settings //
+	//////////////////////////////
+	"nginxConfs": [{
+		// The key which is also used as the title and root node of the graph
+		"key": "FirstDomain",
+		// The relative path from the root dir of the conf file
+		"path": "prod/conf.d/some/some.com.conf",
+		// includes settings - if not included, it will be considered as disabled
+		"includesConf": {
+			// If enabled, all includes are resolved and added to the graph
+			"enable": false,
+			// The path used to relativize the include path. e.g. (/etc/nigx/mydomain/mydomain.conf would be relativized to mydomain/mydomain.conf)
+			"relativePath": "/etc/nginx",
+			// The search paths below are then used to resolve the relative path to find the files
+			"searchPaths": ["./prod", "./default"],
+			// Glob pattern to ignore certain filetypes
+			"ignorePattern": "cors"
+		}
+	}, {
+		"key": "Second Domain",
+		"path": "prod/conf.d/second/second.com.conf",
+	}]
+}

@@ -25,7 +25,7 @@ if (process.env.NODE_ENV !== 'production') {
 
     // Step 2: Attach the dev middleware to the compiler & the server
     app.use(require("webpack-dev-middleware")(compiler, {
-        noInfo: false,
+        noInfo: true,
         publicPath: webpackConfig.output.publicPath
     }));
 
@@ -139,8 +139,16 @@ app.post('/source', function(req, res) {
 
 })
 
-latestCommit(config.gitCloneConf.url, REPO_DIR)
+var fileStatAsync = Promise.promisify(fs.stat);
+
+let retrieveCloneOrPullRepoPromise = config.gitCloneConf.enable ? latestCommit(config.gitCloneConf.url, REPO_DIR) : fileStatAsync(REPO_DIR);
+retrieveCloneOrPullRepoPromise
     .then(() => {
-        console.log("Nginx conf repo cloned successfully. Start server...")
+        if (config.gitCloneConf.enable) {
+            console.log("Nginx conf repo cloned successfully. Start server...")
+        } else {
+            console.log(`Existing Nginx conf repo found at ${REPO_DIR}`)
+        }
+
         app.listen(config.PORT)
     }).catch(error => console.error(error));
