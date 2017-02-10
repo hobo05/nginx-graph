@@ -1,7 +1,0 @@
-[{
-	"key": "DomainA",
-	"path": "prod/conf.d/domainA/domainA.com.conf"
-}, {
-	"key": "DomainB",
-	"path": "prod/conf.d/domainB/domainB.com.conf"
-}]
