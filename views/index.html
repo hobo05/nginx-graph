@@ -28,6 +28,11 @@
                     <option {{#selected}}selected="selected"{{/selected}} value="{{key}}">{{key}}</option>
                     {{/nginxLoadConf}}
                 </select>
+              <div class="checkbox">
+                <label>
+                  <input id="enableIncludes" type="checkbox" name="enableIncludes" {{#enableIncludes}}checked="checked"{{/enableIncludes}}> Resolve Includes
+                </label>
+              </div>
             </div>
         </form>
         <!-- The DIV for the Diagram needs an explicit size or else we won't see anything.
@@ -38,7 +43,7 @@
         <h1>Nginx Source</h1>
         <pre id="source"></pre>
     </div>
-    <script type="text/javascript" src="app.bundle.js"></script>
+    <script type="text/javascript" src="/app.bundle.js"></script>
 </body>
 
 </html>

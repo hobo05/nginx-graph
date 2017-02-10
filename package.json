@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "rimraf dist && NODE_ENV=production webpack --config ./webpack.production.config.js --progress --profile --colors",
-    "start": "node server"
+    "start": "node server",
+    "local-dev": "nodemon server"
   },
   "author": "tim.cheng09@gmail.com",
   "license": "MIT",
@@ -15,16 +16,21 @@
     "url": "https://github.com/hobo05/nginx-graph.git"
   },
   "dependencies": {
+    "app-root-dir": "^1.0.2",
     "bluebird": "^3.4.7",
     "body-parser": "^1.15.2",
     "dotenv": "^4.0.0",
     "express": "^4.14.0",
     "express-ipfilter": "^0.2.1",
+    "funcy": "0.0.4",
     "lodash": "^4.17.4",
+    "minimatch": "^3.0.3",
+    "morgan": "^1.8.0",
     "multimap": "^1.0.2",
     "mustache-express": "^1.2.4",
     "node-file-parser": "^2.2.2",
-    "nodegit": "^0.16.0"
+    "nodegit": "^0.16.0",
+    "rc": "^1.1.6"
   },
   "devDependencies": {
     "babel-core": "^6.22.1",
@@ -37,6 +43,7 @@
     "highlightjs-line-numbers.js": "^1.1.0",
     "jquery": "^2.2.4",
     "mark.js": "github:julmot/mark.js",
+    "nodemon": "^1.11.0",
     "rimraf": "^2.5.4",
     "style-loader": "^0.13.1",
     "webpack": "^1.13.3",

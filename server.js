@@ -10,11 +10,6 @@ var _ = require('lodash');
 var Promise = require("bluebird");
 const fs = require("fs");
 
-// Webpack
-var webpack = require('webpack');
-var webpackConfig = require('./webpack.config');
-var compiler = webpack(webpackConfig);
-
 // local modules
 var nginxParser = Promise.promisify(require('./lib/nginx-parser'));
 var latestCommit = require('./lib/latest-git-master-commit');
@@ -22,29 +17,43 @@ var latestCommit = require('./lib/latest-git-master-commit');
 var app = express()
 
 if (process.env.NODE_ENV !== 'production') {
+
+    // Step 1: Create & configure a webpack compiler
+    var webpack = require('webpack');
+    var webpackConfig = require(process.env.WEBPACK_CONFIG ? process.env.WEBPACK_CONFIG : './webpack.config');
+    var compiler = webpack(webpackConfig);
+
+    // Step 2: Attach the dev middleware to the compiler & the server
     app.use(require("webpack-dev-middleware")(compiler, {
-        noInfo: false, 
+        noInfo: false,
         publicPath: webpackConfig.output.publicPath
     }));
 
+    // Step 3: Attach the hot middleware to the compiler & the server
     app.use(require("webpack-hot-middleware")(compiler, {
-        // path: "/__what",
-        heartbeat: 2000
+        log: console.log,
+        path: '/__webpack_hmr',
+        heartbeat: 10 * 1000
     }));
 }
 
+// enable logging
+app.use(require('morgan')('short'));
 
 // Register '.html' extension with The Mustache Express
 app.engine('html', mustacheExpress());
 
-app.set('views', path.join(__dirname, 'src/templates'))
+app.set('views', path.join(__dirname, 'views'))
 app.set('view engine', 'mustache');
 
 // Whitelist IP(s) if they are passed in
-var ipsString = config("WHITELISTED_IPS");
+var ipsString = config.WHITELISTED_IPS;
 if (ipsString.length > 0) {
     var ips = ipsString.split(",");
-    app.use(ipfilter(ips, {mode: 'allow', allowedHeaders: ['x-forwarded-for']}));
+    app.use(ipfilter(ips, {
+        mode: 'allow',
+        allowedHeaders: ['x-forwarded-for']
+    }));
 }
 
 // serve static content
@@ -54,10 +63,13 @@ app.use(express.static(__dirname + '/dist'))
 app.use(bodyparser.json());
 
 // nginx conf repo directory
-const REPO_DIR = path.resolve(__dirname, "nginx");
+const REPO_DIR = path.resolve(__dirname, config.nginxConfRootDir);
 
 // Load the nginx conf JSON file
-var nginxLoadConf = JSON.parse(fs.readFileSync(config("NGINX_CONF_LOAD_CONF")));
+var nginxLoadConf = config.nginxConfs;
+
+// Add get method to conf object
+nginxLoadConf.get = key => _.find(nginxLoadConf, ["key", key]);
 
 // Add field in object to determine if the conf key is the selectd one
 function createSelectData(nginxLoadConf, selectedKey) {
@@ -87,21 +99,29 @@ var defaultConfKey = defaultConf.key;
 var defaultPath = path.resolve(REPO_DIR, defaultConf.path);
 
 app.get('/', function(req, res) {
-    var confKey = getConfKey(req);
+    let confKey = getConfKey(req);
+
+    let includesConf = nginxLoadConf.get(confKey).includesConf ? nginxLoadConf.get(confKey).includesConf : {};
+    let enableIncludes = Boolean(includesConf.enable);
+
+    console.log(`GET Home enableIncludes=${enableIncludes}`);
 
     res.render('index.html', {
         confKey: confKey,
-        nginxLoadConf: createSelectData(nginxLoadConf, confKey)
+        nginxLoadConf: createSelectData(nginxLoadConf, confKey),
+        enableIncludes: enableIncludes
     })
 })
 
 app.post('/data', function(req, res) {
     res.setHeader("Content-Type", "application/json")
 
-    var confKey = getConfKey(req);
-    var absolutePath = getConfPath(confKey);
+    console.log(`req.body=${JSON.stringify(req.body)}`);
 
-    nginxParser(absolutePath, confKey).then(data => {
+    var confKey = getConfKey(req);
+    var enableIncludes = req.body.enableIncludes;
+
+    nginxParser(nginxLoadConf.get(confKey), enableIncludes).then(data => {
         res.end(JSON.stringify(data))
     }).catch(error => console.error(error));
 })
@@ -110,17 +130,17 @@ app.post('/source', function(req, res) {
     var confKey = getConfKey(req);
     var absolutePath = getConfPath(confKey);
 
-	fs.readFile(absolutePath, 'utf-8', function(err, data) {
-	    if (err) {
-        	return console.error(err);
-    	}
-    	res.end(data);
-	});
+    fs.readFile(absolutePath, 'utf-8', function(err, data) {
+        if (err) {
+            return console.error(err);
+        }
+        res.end(data);
+    });
 
 })
 
-latestCommit(config("NGINX_CONF_REPO"), REPO_DIR)
+latestCommit(config.gitCloneConf.url, REPO_DIR)
     .then(() => {
         console.log("Nginx conf repo cloned successfully. Start server...")
-        app.listen(config("PORT"))
+        app.listen(config.PORT)
     }).catch(error => console.error(error));

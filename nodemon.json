@@ -1,0 +1,6 @@
+{
+  "verbose": true,
+  "ignore": ["src/*", "dist/*"],
+  "watch": ["*.*", ".nginxGraphrc"],
+  "ext": "js json html css"
+}

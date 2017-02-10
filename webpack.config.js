@@ -2,10 +2,10 @@ const path = require('path')
 const webpack = require('webpack')
 
 module.exports = {
-    devtool: 'eval-source-map',
+    devtool: '#source-map',
 
     entry: [
-    	'webpack-hot-middleware/client', 
+    	'webpack-hot-middleware/client?path=/__webpack_hmr&timeout=20000',
     	path.join(__dirname, 'src/index.js')
     ],
     output: {

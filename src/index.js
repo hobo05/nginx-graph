@@ -18,17 +18,19 @@ require("./js/jquery.mark.min");
 var $$ = require("gojs");
 
 // Create the current conf key JSON from the select
-var createConfJson = () => JSON.stringify({"confKey": $("#confKey").val()});
+var createConfJson = (mergeObj = {}) => JSON.stringify(Object.assign({"confKey": $("#confKey").val()}, mergeObj));
 
 // Retrieve the diagram data from server
 var retrieveDiagramData = () => {
+    let enableIncludes = Boolean($("#enableIncludes:checked").val());
+
     return $.ajax({
         url: '/data', //the URL to your node.js server that has data
         method: 'POST',
         contentType: 'application/json',
         dataType: 'json',
         cache: false,
-        data: createConfJson()
+        data: createConfJson({enableIncludes: enableIncludes})
     })
 };
 
@@ -58,15 +60,20 @@ var retrieveAndSetSourceCode = () => {
 
 // Declare myModel here so it can be updated dynamically
 var myModel;
+var myDiagram;
 
 document.body.onload = $(() => {
     retrieveDiagramData().done(data => createDiagram(data));
 
     retrieveAndSetSourceCode();
 
-    $('#confKey').on('change', event => {
+    $('#confKey').off().on('change', event => {
         retrieveDiagramData().done(data => myModel.nodeDataArray = data);
         retrieveAndSetSourceCode();
+    });
+
+    $("#enableIncludes").off().on('click', e => {
+        retrieveDiagramData().done(data => myModel.nodeDataArray = data);
     });
 });
 
@@ -85,7 +92,7 @@ function createDiagram(dataArray) {
 
     var $$ = go.GraphObject.make; // for conciseness in defining templates
 
-    var myDiagram = $$(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
+    myDiagram = $$(go.Diagram, "myDiagramDiv", // create a Diagram for the DIV HTML element
         {
             "toolManager.hoverDelay": 100,  // 100 milliseconds instead of the default 850
             initialContentAlignment: go.Spot.Center, // center the content
@@ -226,4 +233,14 @@ function createDiagram(dataArray) {
 
     });
 
+}
+
+// hot reload
+if (module.hot) {
+  module.hot.accept();
+  module.hot.dispose(function() {
+    // Set the div to null so it can
+    // be re-created on hot reload
+    myDiagram.div = null;
+  });
 }
